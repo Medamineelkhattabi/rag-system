@@ -11,7 +11,7 @@ API_URL = os.getenv("API_URL", "http://localhost:8000")
 st.set_page_config(page_title="Assistant documentaire IA (RAG)", page_icon="📄", layout="centered")
 
 st.title("📄 Assistant documentaire (RAG)")
-st.caption("Posez vos questions sur le corpus — les réponses sont ancrées dans les documents, avec leurs sources.")
+st.caption("Posez vos questions sur le corpus documentaire — réponses générées à partir des sources retrouvées.")
 
 # Barre latérale : état de l'API et (ré)indexation
 with st.sidebar:
