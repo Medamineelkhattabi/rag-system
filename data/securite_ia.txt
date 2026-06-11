@@ -1,0 +1,57 @@
+SECURITE ET GOUVERNANCE DE L'IA - BONNES PRATIQUES
+(Document pedagogique de demonstration, contenu fictif et generaliste)
+
+1. PROTECTION DES CLES API
+Ne jamais exposer les cles API dans le code source, les journaux, les messages
+d'erreur ou les depots versionnes. Une cle compromise doit etre revoquee et
+regeneree immediatement. Les cles ne doivent jamais etre partagees en clair.
+
+2. GESTION DES SECRETS AVEC .ENV
+Les secrets (cles API, mots de passe, jetons) sont stockes dans un fichier .env
+qui n'est jamais versionne. Un fichier .env.example, sans valeurs sensibles,
+documente les variables attendues. Cette separation permet de partager la
+configuration sans divulguer les secrets.
+
+3. NE PAS METTRE DE SECRETS DANS GIT
+Le fichier .env doit figurer dans .gitignore. Avant chaque commit, verifier
+qu'aucun secret ni donnee sensible n'est ajoute par erreur. En cas de fuite,
+revoquer immediatement les identifiants concernes et nettoyer l'historique.
+
+4. CORPUS ET CONFIDENTIALITE
+Ne pas indexer de documents confidentiels ou de donnees personnelles dans un
+prototype non securise. Tout corpus de demonstration doit etre fictif. En
+production, l'indexation de documents sensibles exige un controle d'acces, un
+chiffrement et une gestion fine des autorisations.
+
+5. VERIFICATION DES SOURCES
+Chaque reponse doit pouvoir etre rattachee a ses sources. L'affichage des
+sources et des scores de pertinence permet de controler la fiabilite de
+l'information et de remonter au document d'origine.
+
+6. LIMITATION DES HALLUCINATIONS
+Le systeme doit limiter les hallucinations en ancrant strictement ses reponses
+dans le contexte recupere. Lorsque l'information est absente du corpus, le
+modele doit le declarer clairement plutot que d'inventer une reponse.
+
+7. FILTRAGE DES DONNEES SENSIBLES
+Mettre en place des controles pour eviter que des donnees sensibles soient
+envoyees au modele ou stockees dans les journaux. Anonymiser ou masquer les
+informations personnelles lorsque c'est possible.
+
+8. JOURNALISATION SANS EXPOSITION DES SECRETS
+Les erreurs doivent etre journalisees pour faciliter le diagnostic, mais les
+journaux ne doivent jamais contenir de secrets ni de donnees personnelles. Les
+messages renvoyes a l'utilisateur restent generiques.
+
+9. IMPORTANCE DU CONTROLE HUMAIN
+L'IA assiste la decision mais ne doit pas la remplacer pour les usages
+sensibles. Un controle humain (human in the loop) permet de verifier les
+resultats, de corriger les erreurs et d'assumer la responsabilite des decisions.
+
+10. AMELIORATIONS POSSIBLES EN PRODUCTION
+- Mettre en place l'authentification et le controle d'acces base sur les roles.
+- Tracer et auditer les acces et les requetes.
+- Chiffrer les donnees au repos et en transit.
+- Surveiller les usages (monitoring) et detecter les comportements anormaux.
+- Limiter le debit (rate limiting) et isoler les environnements.
+- Auditer regulierement les dependances et corriger les vulnerabilites.

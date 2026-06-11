@@ -1,0 +1,22 @@
+# Secrets et configuration locale
+.env
+.streamlit/secrets.toml
+
+# Environnements virtuels
+.venv/
+venv/
+
+# Caches Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Index vectoriel (régénérable via `python -m scripts.ingest`)
+storage/
+vector_db/
+
+# Outils / OS
+.idea/
+.vscode/
+.DS_Store
+*.log

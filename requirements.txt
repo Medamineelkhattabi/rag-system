@@ -1,0 +1,18 @@
+# --- Core RAG ---
+google-genai>=1.0.0          # SDK Gemini (embeddings)
+numpy>=1.26                  # store vectoriel (similarité cosinus)
+requests>=2.31               # appel du LLM distant (compatible OpenAI) + frontend
+
+# --- Ingestion de documents ---
+pypdf>=4.0                   # extraction texte PDF
+python-docx>=1.1             # extraction texte DOCX (lecture + génération du guide)
+reportlab>=4.0              # génération du PDF de démonstration
+
+# --- API ---
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+python-dotenv>=1.0
+
+# --- Frontend ---
+streamlit>=1.33
