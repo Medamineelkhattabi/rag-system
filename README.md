@@ -1,47 +1,46 @@
 # RAG System
 
-Ce projet est un prototype simple de système RAG permettant d'interroger un corpus
-documentaire local et de générer des réponses basées sur les documents fournis.
+This project is a simple RAG prototype that lets you query a local document corpus
+and generate answers based on the provided documents.
 
-L'objectif est de montrer le fonctionnement complet d'un pipeline RAG : ingestion de
-documents, découpage en chunks, génération d'embeddings, recherche sémantique,
-construction du contexte et génération d'une réponse avec ses sources.
+The goal is to show a complete RAG pipeline end to end: document ingestion, chunking,
+embedding generation, semantic search, context building, and answer generation with
+sources.
 
-Le projet contient une API FastAPI, une interface Streamlit et un petit corpus
-documentaire de démonstration autour de l'intelligence artificielle.
+The project includes a FastAPI backend, a Streamlit interface, and a small demo
+document corpus about artificial intelligence.
 
-## Fonctionnement général
+## How it works
 
-Le pipeline se déroule en deux temps.
+The pipeline runs in two phases.
 
-À l'ingestion, les documents du dossier `data/` sont lus, découpés en fragments
-(chunks) avec un léger recouvrement, convertis en vecteurs (embeddings) et stockés
-dans un index local.
+During ingestion, the documents in the `data/` folder are read, split into chunks
+with a small overlap, converted into vectors (embeddings), and stored in a local index.
 
-À l'interrogation, la question est elle aussi convertie en vecteur. On compare ce
-vecteur à ceux de l'index par similarité cosinus pour récupérer les passages les plus
-proches. Ces passages servent de contexte au modèle de langage, qui rédige une réponse
-en s'appuyant uniquement sur eux et en citant ses sources. Si l'information ne se
-trouve pas dans le contexte, le système l'indique au lieu d'inventer une réponse.
+At query time, the question is also converted into a vector. It is compared to the
+indexed vectors using cosine similarity to retrieve the closest passages. These
+passages become the context for the language model, which writes an answer based only
+on them and cites its sources. If the information is not in the context, the system
+says so instead of making up an answer.
 
-## Technologies utilisées
+## Tech stack
 
 - Python 3.12
-- FastAPI pour l'API
-- Streamlit pour l'interface
-- NumPy pour l'index vectoriel (similarité cosinus)
-- Gemini pour les embeddings
-- Un modèle de génération exposé via une API compatible OpenAI (par exemple Ollama)
-- pypdf et python-docx pour lire les PDF et DOCX, reportlab pour générer le PDF de démo
+- FastAPI for the API
+- Streamlit for the interface
+- NumPy for the vector index (cosine similarity)
+- Gemini for the embeddings
+- A generation model exposed through an OpenAI-compatible API (for example Ollama)
+- pypdf and python-docx to read PDF and DOCX, reportlab to generate the demo PDF
 
-## Structure du projet
+## Project structure
 
 ```
-app/         API FastAPI, pipeline RAG, clients embeddings et génération, index
-frontend/    interface Streamlit
-scripts/     ingestion, génération du corpus de démo, statistiques
-data/        corpus de démonstration (Markdown, TXT, PDF, DOCX)
-storage/     index vectoriel persistant (généré, non versionné)
+app/         FastAPI API, RAG pipeline, embedding and generation clients, index
+frontend/    Streamlit interface
+scripts/     ingestion, demo corpus generation, statistics
+data/        demo corpus (Markdown, TXT, PDF, DOCX)
+storage/     persistent vector index (generated, not versioned)
 ```
 
 ## Installation
@@ -54,84 +53,83 @@ pip install -r requirements.txt
 
 ## Configuration
 
-Copiez `.env.example` en `.env` et renseignez vos valeurs.
+Copy `.env.example` to `.env` and fill in your values.
 
 ```powershell
 copy .env.example .env
 ```
 
-Les embeddings utilisent une clé Gemini (gratuite via Google AI Studio). La génération
-passe par une API compatible OpenAI : indiquez son URL et le nom du modèle. Si
-l'endpoint est protégé par Cloudflare Access, renseignez les deux en-têtes prévus dans
-`.env.example` ; sinon laissez-les vides.
+Embeddings use a Gemini API key (free via Google AI Studio). Generation goes through an
+OpenAI-compatible API: set its URL and the model name. If the endpoint is protected by
+Cloudflare Access, fill in the two headers provided in `.env.example`; otherwise leave
+them empty.
 
-Aucune valeur sensible ne doit être commitée : `.env` est ignoré par Git.
+No sensitive value should ever be committed: `.env` is ignored by Git.
 
-## Ingestion du corpus
+## Corpus ingestion
 
 ```powershell
-python -m scripts.build_corpus_assets   # génère le PDF et le DOCX de démo
-python -m scripts.ingest                # indexe le dossier data/
-python -m scripts.corpus_stats          # affiche le nombre de documents et de chunks
+python -m scripts.build_corpus_assets   # generate the demo PDF and DOCX
+python -m scripts.ingest                # index the data/ folder
+python -m scripts.corpus_stats          # show the number of documents and chunks
 ```
 
-L'ingestion est aussi accessible via l'API (`POST /ingest`) ou le bouton dédié dans
-l'interface.
+Ingestion is also available through the API (`POST /ingest`) or the dedicated button in
+the interface.
 
-## Lancement du backend
+## Running the backend
 
 ```powershell
 uvicorn app.api:app --reload --port 8000
 ```
 
-La documentation interactive est disponible sur http://localhost:8000/docs
+Interactive documentation is available at http://localhost:8000/docs
 
-## Lancement du frontend
+## Running the frontend
 
-Dans un second terminal :
+In a second terminal:
 
 ```powershell
 streamlit run frontend/streamlit_app.py
 ```
 
-L'interface s'ouvre sur http://localhost:8501
+The interface opens at http://localhost:8501
 
-## Exemples de questions
+## Example questions
 
-Questions couvertes par le corpus :
-
-```
-Qu'est-ce qu'un système RAG ?
-Pourquoi utilise-t-on des embeddings ?
-Comment limiter les hallucinations d'un LLM ?
-Quels sont les cas d'usage de la vision par ordinateur ?
-```
-
-Question hors corpus (le système doit répondre que l'information n'est pas disponible) :
+Questions covered by the corpus:
 
 ```
-Quelle est la capitale de l'Australie ?
+What is a RAG system?
+Why do we use embeddings?
+How can you limit hallucinations from an LLM?
+What are the use cases of computer vision?
 ```
 
-## Endpoints de l'API
+Out-of-corpus question (the system should answer that the information is not available):
 
-- `GET /health` : état du service, modèles utilisés et nombre de chunks indexés.
-- `POST /ingest` : (ré)indexe le corpus du dossier `data/`.
-- `POST /ask` : prend une question (`{"question": "..."}`) et renvoie la réponse avec
-  ses sources et leurs scores.
+```
+What is the capital of Australia?
+```
 
-## Limites du prototype
+## API endpoints
 
-- L'index vectoriel tient en mémoire et convient à un petit corpus, pas à des millions
-  de documents.
-- Le découpage se fait par caractères ; un découpage par phrases serait plus fin.
-- Il n'y a pas de reclassement (re-ranking) des passages récupérés.
-- La qualité des réponses dépend du modèle d'embeddings et du modèle de génération.
+- `GET /health`: service status, models in use, and number of indexed chunks.
+- `POST /ingest`: (re)indexes the corpus in the `data/` folder.
+- `POST /ask`: takes a question (`{"question": "..."}`) and returns the answer with its
+  sources and their scores.
 
-## Améliorations possibles
+## Prototype limitations
 
-- Remplacer l'index NumPy par une base vectorielle dédiée pour passer à l'échelle.
-- Ajouter un re-ranking pour améliorer la pertinence des passages.
-- Mettre en place un jeu de questions/réponses pour évaluer le système.
-- Ajouter l'authentification, la gestion des accès et la journalisation.
-- Gérer le multilingue et une recherche hybride (lexicale et sémantique).
+- The vector index is held in memory and suits a small corpus, not millions of documents.
+- Chunking is character-based; sentence-based splitting would be finer.
+- There is no re-ranking of the retrieved passages.
+- Answer quality depends on the embedding model and the generation model.
+
+## Possible improvements
+
+- Replace the NumPy index with a dedicated vector database to scale up.
+- Add re-ranking to improve passage relevance.
+- Set up a question/answer test set to evaluate the system.
+- Add authentication, access control, and logging.
+- Support multiple languages and hybrid (lexical and semantic) search.
